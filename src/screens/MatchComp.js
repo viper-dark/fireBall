@@ -1,7 +1,7 @@
 //require('dotenv').config();
 
 import React, {useState, useEffect} from 'react';
-import Timer from './componants/Timer';
+import Timer from '../componants/Timer';
 import {
   StyleSheet,
   View,
@@ -10,6 +10,7 @@ import {
   ScrollView,
   ActivityIndicator,
   TouchableNativeFeedback,
+  RefreshControl,
 } from 'react-native';
 import Dialog from 'react-native-dialog';
 
@@ -107,15 +108,28 @@ const Matches = ({navigation}) => {
   const [isLoading, setLoading] = useState(true);
   const [games, setGames] = useState([]);
   const [day, setday] = useState('');
+  //state for the refresh component
+  const [refreshing, setRefreshing] = useState(false);
+  const refresh_handeler = () => {
+    setRefreshing(true);
 
+    fetch_data(day).then(() => setRefreshing(false));
+  };
+
+  const fetch_data = async day => {
+    const response = await fetch('https://stream-scraper.vercel.app/' + day);
+    //testing
+
+    const data = await response.json();
+
+    setGames(data.games);
+  };
   const getGames = async (day = '') => {
-    try {
-      // console.log('zabi' + process.env.REACT_APP_BASE_URL);
-      const response = await fetch('https://stream-scraper.vercel.app/' + day);
-      //testing
+    setday(day);
+    setLoading(true);
 
-      const data = await response.json();
-      setGames(data.games);
+    try {
+      await fetch_data(day);
     } catch (error) {
       console.error(error);
     } finally {
@@ -125,38 +139,43 @@ const Matches = ({navigation}) => {
 
   useEffect(() => {
     getGames(day);
-    setLoading(true);
-  }, [day]);
+  }, []);
 
   return (
-    <ScrollView style={styles.scrollView}>
+    <ScrollView
+      style={styles.scrollView}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={refresh_handeler} />
+      }>
       <View style={{flexDirection: 'row'}}>
         <TouchableNativeFeedback
           background={TouchableNativeFeedback.Ripple('#21325E', false)}
           onPress={event => {
-            setday('yesterday');
+            getGames('yesterday');
           }}>
           <Text style={styles.dayBtn}>مباريات الأمس</Text>
         </TouchableNativeFeedback>
         <TouchableNativeFeedback
           background={TouchableNativeFeedback.Ripple('#21325E', false)}
-          onPress={event => setday('')}>
+          onPress={event => getGames('')}>
           <Text style={styles.dayBtn}>مباريات اليوم</Text>
         </TouchableNativeFeedback>
         <TouchableNativeFeedback
           background={TouchableNativeFeedback.Ripple('#21325E', false)}
-          onPress={event => setday('tomorrow')}>
+          onPress={event => getGames('tomorrow')}>
           <Text style={styles.dayBtn}>مباريات الغد</Text>
         </TouchableNativeFeedback>
       </View>
       {isLoading ? (
         <ActivityIndicator size={'large'} />
       ) : (
-        <View style={{marginBottom: 25}}>
-          {games.map((game, i) => (
-            <Match game={game} key={i} day={day} navigation={navigation} />
-          ))}
-        </View>
+        refreshing || (
+          <View style={{marginBottom: 25}}>
+            {games.map((game, i) => (
+              <Match game={game} key={i} day={day} navigation={navigation} />
+            ))}
+          </View>
+        )
       )}
     </ScrollView>
   );

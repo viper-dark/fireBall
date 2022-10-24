@@ -5,7 +5,6 @@
  * @format
  * @flow strict-local
  */
-import Va from './src/screens/test';
 import React, {useEffect} from 'react';
 import type {Node} from 'react';
 import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
@@ -22,8 +21,8 @@ import {
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import SplashScreen from 'react-native-splash-screen';
 
-import Matches from './src/MatchComp';
-import MatchStream from './src/componants/MatchStream';
+import Matches from './src/screens/MatchComp';
+import MatchStream from './src/screens/MatchStream';
 
 const Stack = createNativeStackNavigator();
 
@@ -47,7 +46,6 @@ const App = () => {
           options={{headerShown: false}}
         />
         <Stack.Screen name="Match" component={MatchStream} />
-        <Stack.Screen name="Va" component={Va} />
       </Stack.Navigator>
     </NavigationContainer>
   );
