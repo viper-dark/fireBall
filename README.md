@@ -1,5 +1,5 @@
 # fireBall ⚽:fire:
-A react-native mobile app  for watching football matches with deffernt resolutions backed  by
+A react-native mobile app  for watching football matches with different resolutions backed by
 the [stream-scraper](https://github.com/viper-dark/stream-scraper) API 
 
 ## screenshots
@@ -15,6 +15,7 @@ the [stream-scraper](https://github.com/viper-dark/stream-scraper) API
 </picture>
  
  ## android apk
+ [Download](/app-release.apk)
  
  
 
